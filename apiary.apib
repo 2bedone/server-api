@@ -1,80 +1,1081 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://app.2bedone.net:19191
 
-# 2bedone
+2bedone API v2
+---
+Добро пожаловать в [2bedone](http://2bedone.net).
+---
+-----
+Примечание:
+```
+Дата передается по стандарту ISO 8601.
+- DateTime ... yyyy-MM-ddTHH:mm:ssTZD
+Example = 2015-08-17T19:17:53.429Z, 2015:08-17T19:17
+- Date ... yyyy-MM-dd
+Example = 2015:08:17
+- Time ... HH:mm:ss.SSS
+Example = 22:17:53.429, 22:17
+```
+-----
+# Group API SECURITY
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+## Пользователь [/sec/user]
 
-## Questions Collection [/questions]
-
-### List All Questions [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+### создать пользователя [POST]
 
 + Request (application/json)
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
     + Headers
 
-            Location: /questions/2
+            Authorization: Basic {clientId:clientSecret-Encode64}
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+              "user": {
+                "emailAddress": "example@mail.ru",
+                "firstName": "example",
+                "lastName": "example",
+                "avatarsource": null,
+                "age": 0
+              },
+              "password": "1Example"
             }
+
++ Response 200 (application/json)
+
+        {
+          "emailAddress": "example@mail.ru",
+          "firstName": "example",
+          "lastName": "example",
+          "age": 0,
+          "avatarsource": null,
+          "id": "02072a1d-3b90-4e67-afb2-b08028ed9d06"
+        }
+
++ Response 400 (application/json)
+
+        {
+          "url": "/user",
+          "ex": "User Exception: Create user error"
+        }
+        
++ Response 401 (application/json)
+
+            {
+              "error": "unauthorized",
+              "error_description": "Client is not configured"
+            }
+
+### получить данные пользователя [GET /sec/user{?grant_type,username,password}]
+
++ Parameters
+    + grant_type (string,required) ... authorization
+    + username (string,required) ... example@example.com
+    + password (string,required) ... example password
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Basic {clientId:clientSecret-Encode64}
+
++ Response 200 (application/json)
+
+            {
+              "emailAddress": "example@mail.ru",
+              "firstName": "example",
+              "lastName": "example",
+              "age": 0,
+              "avatarsource": "http://avatarsource"
+              "id": "b6049896-b2da-46c4-a556-bc259855f756"
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/sec/user",
+              "ex": "User Exception: error mapping params"
+            }
+            
++ Response 401 (application/json)
+
+            {
+              "error": "unauthorized",
+              "error_description": "Client is not configured"
+            }
+
+
+### обновить данные пользователя [PUT]
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Basic {clientId:clientSecret-Encode64}
+            
+    + Body 
+            
+            {
+              "id": "b6049896-b2da-46c4-a556-bc259855f756",
+              "password": "1Example",
+              "params": {
+                "firstName": "example1 first",
+                "lastName": "example1 last",
+                "emailAddress": "example@mail.ru",
+                "avatarsource": "http://avatarsource",
+                "newPassword": "1Example",
+                "age": "21"
+              }
+            }
+            
++ Response 200 (application/json)
+
+            {
+              "message": "OK",
+              "description": null,
+              "trace": "Thu Sep 03 16:35:47 MSK 2015"
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/user",
+              "message": "User Exception: Update user error, incorrect params"
+            }
+            
++ Response 401 (application/json)
+
+            {
+              "error": "unauthorized",
+              "error_description": "Client is not configured"
+            }
+            
+
+### удалить пользователя [DELETE /sec/user{?username,password}]
+
++ Parameters
+    + username (string,required) ... example@example.com
+    + password (string,required) ... example password
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Basic {clientId:clientSecret-Encode64}
+
++ Response 200 (application/json)
+
+            {
+              "message": "OK",
+              "description": null,
+              "trace": "Thu Sep 03 16:19:31 MSK 2015"
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/user",
+              "message": "User Exception: delete user error"
+            }
+
++ Response 401 (application/json)
+
+            {
+              "error": "unauthorized",
+              "error_description": "Client is not configured"
+            }
+
+
+## Токен [/sec/oauth]
+
+### Получить токен [POST /oauth/token{?grant_type,username,password,scope}]
+
++ Parameters
+    + grant_type: password (string,required)
+    + username: example@example.com (string,required)
+    + password: example password (string,required)
+    + scope: read write (string,required)
+
+
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Basic {clientId:clientSecret-Encode64}
+
++ Response 200 (application/json)
+
+            {
+              "access_token": "fc98b5f2-6ac6-4850-bcc5-7fe3846363c7",
+              "token_type": "bearer",
+              "refresh_token": "4f8aea67-ad06-43d8-af54-c4d3da3fb432",
+              "scope": "read write"
+            }
+
++ Response 400 (application/json)
+
+            {
+              "error": "invalid_grant",
+              "error_description": "Bad credentials"
+            }
+            
++ Response 401 (application/json)
+
+            {
+              "error": "unauthorized",
+              "error_description": "Client is not configured"
+            }
+
+
+### Обновить токен [POST /oauth/token{?grant_type,refresh_token}]
+
++ Parameters 
+    + grant_type (string,required) ... refresh_token
+    + refresh_token (string,required) ... xxxx-xxxx-xxxx-xxxx
+
++ Request (application/json)
+
++ Response 200 (application/json)
+
+            {
+              "access_token": "fd378cf6-2324-4884-950b-d7d89673e999",
+              "token_type": "bearer",
+              "refresh_token": "4f8aea67-ad06-43d8-af54-c4d3da3fb432",
+              "scope": "read write"
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "error": "invalid_grant",
+              "error_description": "Invalid refresh token: 4f8aea67-ad06-43d8-af54-c4d3da3fb43"
+            }
+
+
+### Проверить токен [POST /oauth/check_token{?token}]
+
++ Parameters
+    + token (string,required) ... токен, который необходимо проверить
+        + Example = "9816145c-6e0b-4e7f-90dd-e5bfd5aa560d"
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Basic {clientId:clientSecret-Encode64}
+
++ Response 200 (application/json)
+
+
+        {
+          "user_name": "d0627677-d68f-4937-940f-7cb3584a5988",
+          "authorities": [
+            "ROLE_USER"
+          ],
+          "client_id": "3468a347f4ce4080898c1055a9f39a1a",
+          "scope": [
+            "read",
+            "write"
+          ]
+        }
+        
+        
++ Response 400 (application/json)
+
+
+        {
+          "status": 401,
+          "error": "Unauthorized",
+          "message": "Bad credentials",
+          "timeStamp": "Tue Sep 01 14:40:51 UTC 2015",
+          "trace": null
+        }
+
+### 
+
+# Group API RESOURCE
+
+## Задачи [/res/task] 
+
+### добавление задач [POST]
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            
+    + Body
+    
+            [
+              {
+                "name": "name test",
+                "description": "description test",
+                "priority": "2",
+                "isdeleted": true,
+                "repeat": "2",
+                "issolved": true,
+                "hasreminder": true,
+                "tag": null,
+                "subtasks": [
+                  {
+                    "description": "ce27b0ab-105f-411f-a3ac-9c6698ce8f34",
+                    "isexecute": true,
+                    "currentid": 1,
+                    "position": 1
+                  }
+                ],
+                "localid": 1,
+                "deleteddate": "2015-08-17T19:17:53.429Z",
+                "solvedate": "2015-08-17T19:17:53.429Z",
+                "reminder": "22:17:53.429",
+                "startdate": "2015-08-26",
+                "enddate": "2015-08-26"
+              }
+            ]
+
++ Response 200 (application/json)
+
+        {
+          "creates": [
+            {
+              "localid": 1,
+              "serverid": 9
+            },
+            {
+              "localid": 2,
+              "serverid": 10
+            }
+          ]
+        }
+
++ Response 400 (application/json)
+
+        {
+          "url": "/task",
+          "ex": "User Exception: tasks create error"
+        }
+
+
+### выборка задачи [GET /res/task{?idtask}]
+
++ Parameters
+   
+   + idtask (number,required) ... Ид задачи
+        + Example = "12"
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)   
+
+            {
+              "search": [
+                {
+                  "name": "name test",
+                  "description": "description test",
+                  "priority": "2",
+                  "isdeleted": "true",
+                  "repeat": "2",
+                  "issolved": "true",
+                  "hasreminder": "true",
+                  "tag": [],
+                  "subtasks": null,
+                  "serverid": "43",
+                  "deleteddate": "2015-08-17T19:17:53.429Z",
+                  "solvedate": "2015-08-17T19:17:53.429Z",
+                  "reminder": "22:17:53.429",
+                  "startdate": "2015-08-26",
+                  "enddate": "2015-08-26"
+                }
+              ]
+            }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/task",
+              "ex": "User Exception: task get error"
+            }
+
+
+### изменение задач [PUT]
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+
+    + Body
+
+            [
+              {
+                "name": "updates 0",
+                "description": null,
+                "priority": null,
+                "isdeleted": true,
+                "repeat": null,
+                "issolved": true,
+                "hasreminder": true,
+                "tag": null,
+                "subtasks": null,
+                "serverid": "50",
+                "deleteddate": null,
+                "solvedate": null,
+                "reminder": null,
+                "startdate": null,
+                "enddate": null
+              }
+            ]
+            
++ Response 200 (application/json)
+
+         {
+           "message": "OK",
+           "description": null,
+           "trace": "Mon Aug 31 14:23:11 UTC 2015"
+         }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/task",
+              "ex": "User Exception: task not found, serverId: [240, 241, 242]"
+            }
+
+
+### удаление задач [DELETE /res/task{?idtask}]
+
++ Parameters
+
+   + idtask (array[int],required) ... Массив удаляемых задач
+        + Example = [1,2,3,4,5]
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)
+
+            {
+              "message": "OK",
+              "description": null,
+              "trace": "Mon Aug 31 14:40:53 UTC 2015"
+            }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/task",
+              "ex": "User Exception: Not found: [2222]"
+            }
+
+
+### выборка задач по типу [GET /res/task/type{?type,revision}]
+
++ Parameters
+
+    + type (enum[string],required)
+
+         Тип задач
+
+         + Members
+            + today
+            + scheduled
+            + issolved
+            + isdeleted
+            + expired
+            
+    + revision = 0 (number,optional) ... Ревизия 
+    
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            
++ Response 200 (application/json)
+
+            {
+              "search": [
+                {
+                  "name": "name test",
+                  "description": "description test",
+                  "priority": "2",
+                  "isdeleted": "true",
+                  "repeat": "2",
+                  "issolved": "true",
+                  "hasreminder": "true",
+                  "tag": [],
+                  "subtasks": null,
+                  "serverid": "43",
+                  "deleteddate": "2015-08-17T19:17:53.429Z",
+                  "solvedate": "2015-08-17T19:17:53.429Z",
+                  "reminder": "22:17:53.429",
+                  "startdate": "2015-08-26",
+                  "enddate": "2015-08-26"
+                }
+              ]
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/task/type",
+              "ex": "User Exception: revision parse error"
+            }
+
+### выборка задач [GET /res/task/search{?date,priority,repeat,hasreminder,revision,issolved,isdeleted,isdeletedpermanent}]
+
++ Parameters
+    
+    + date = 2015-07-08T12:12 (string,optional)  ... Дата в формате ISO 8601. Выборка списка задач, где выбранная дата >= "startDate", но <= "endDate"
+    
+    + priority (enum[number],optional)
+
+         Приоритет
+
+         + Members
+            + 0 : No
+            + 1 : Low
+            + 2 : Normal
+            + 3 : High
+            
+    + repeat (enum[number],optional)
+
+         Повторения
+
+         + Members
+            + 0 : Never
+            + 1 : EveryDay
+            + 2 : EveryWeek
+            + 3 : EveryMonth
+            + 4 : EveryYear
+
+    + hasreminder = true (boolean,optional) ... Напоминание
+
+    + revision = 0 (number,optional) ... Ревизия 
+
+    + issolved = false (boolean,optional) ... Решенные задачи
+    
+    + isdeleted = false (boolean,optional) ... Включить удаленные встречи
+    
+    + isdeletedpermanent = false (boolean,optional) ... Включить полностью удаленные встречи
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)
+
+            {
+              "search": [
+                {
+                  "name": "name test",
+                  "description": "description test",
+                  "priority": "2",
+                  "isdeleted": "true",
+                  "repeat": "2",
+                  "issolved": "true",
+                  "hasreminder": "true",
+                  "tag": null,
+                  "subtasks": null,
+                  "serverid": "43",
+                  "deleteddate": "2015-08-17T18:39:27.969Z",
+                  "solvedate": "2015-08-17T18:39:27.969Z",
+                  "reminder": "18:39:00.000",
+                  "startdate": "2015-08-26",
+                  "enddate": "2015-08-26"
+                }
+              ]
+            }
+
+
+## Идеи [/res/idea] 
+
+### добавление идей [POST]
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            
+    + Body
+            
+            [
+              {
+                "description": "0 create idea",
+                "isimportant": true,
+                "isdeleted": true,
+                "tag": [],
+                "date": "2015-08-28T16:23",
+                "localid": 1
+              }
+            ]
+
++ Response 200 (application/json)
+
+        {
+          "creates": [
+            {
+              "localid": 1,
+              "serverid": 9
+            },
+            {
+              "localid": 2,
+              "serverid": 10
+            }
+          ]
+        }
+
++ Response 400 (application/json)
+
+        {
+          "url": "/idea",
+          "ex": "User Exception: ideas create error"
+        }
+
+
+### выборка идеи [GET /res/idea{?ididea}]
+
++ Parameters
+   
+   + ididea (number,required) ... Ид идеи
+        + Example = "12"
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)   
+
+            {
+              "search": [
+                {
+                  "description": "create idea",
+                  "isimportant": true,
+                  "isdeleted": true,
+                  "tag": [],
+                  "date": "2015-08-17T19:17:53.429Z",
+                  "serverid": "30"
+                }
+              ]
+            }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/idea",
+              "ex": "User Exception: idea get error"
+            }
+
+
+### изменение идей [PUT]
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+
+    + Body
+
+            [
+              {
+                "description": "create idea",
+                "isimportant": false,
+                "isdeleted": true,
+                "tag": [],
+                "date": "2015-08-17T19:17:53.429Z",
+                "serverid": "20"
+              }
+            ]
+            
++ Response 200 (application/json)
+
+         {
+           "message": "OK",
+           "description": null,
+           "trace": "Mon Aug 31 14:23:11 UTC 2015"
+         }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/idea",
+              "ex": "User Exception: idea not found, serverId: [240, 241, 242]"
+            }
+
+
+### удаление идей [DELETE /res/idea{?ididea}]
+
++ Parameters
+
+   + ididea (array[int],required) ... Массив удаляемых идей
+        + Example = [1,2,3,4,5]
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)
+
+            {
+              "message": "OK",
+              "description": null,
+              "trace": "Mon Aug 31 14:40:53 UTC 2015"
+            }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/idea",
+              "ex": "User Exception: Not found: [2222]"
+            }
+
+
+### выборка идей по типу [GET /res/idea/type{?type,revision}]
+
++ Parameters
+    
+    + type (enum[string],required)
+            
+        тип списка встреч
+            
+        + Members
+            + all
+            + isimportant
+            
+    + revision = 0 (number,optional) ... Ревизия
+  
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+ 
++ Response 200 (application/json)
+
+            {
+              "search": [
+                {
+                  "description": "create idea",
+                  "isimportant": true,
+                  "isdeleted": true,
+                  "tag": [],
+                  "date": "2015-08-17T19:17:53.429Z",
+                  "serverid": "30"
+                }
+              ]
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/idea/type",
+              "ex": "User Exception: revision parse error"
+            }
+
+### выборка идей [GET /res/idea/search{?date,isimportant,revision,isdeleted,isdeletedpermanent}]
+
++ Parameters
+
+    + date = 2015-07-08T12:12 (string,optional)  ... Дата в формате ISO 8601. Находит все идеи, у которых дата создания больше выбранной
+    
+    + isimportant = true (boolean,optional) ... Важность идей
+
+    + revision = 0 (number,optional) ... Ревизия 
+    
+    + isdeleted = false (boolean,optional) ... Включить удаленные идеи
+    
+    + isdeletedpermanent = false (boolean,optional) ... Включить полностью удаленные идеи
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)
+
+            {
+              "search": [
+                {
+                  "description": "create idea",
+                  "isimportant": false,
+                  "isdeleted": true,
+                  "tag": [],
+                  "date": "2015-08-17T19:17:53.429Z",
+                  "serverid": "30"
+                }
+              ]
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/idea/search",
+              "ex": "User Exception: revision parse error"
+            }
+
+## Встречи [/res/meet] 
+
+### добавление встреч [POST]
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            
+    + Body
+            
+            [
+              {
+                "name": "create meet 0",
+                "isimportant": false,
+                "isdeleted": false,
+                "hasreminder": false,
+                "tag": null,
+                "meeting": "2015-08-17T19:17:53.429Z",
+                "reminder": "2015-08-17T19:17:53.429Z",
+                "localid": 1
+              },
+              {
+                "name": "create meet 1",
+                "isimportant": false,
+                "isdeleted": false,
+                "hasreminder": false,
+                "tag": null,
+                "meeting": "2015-08-17T19:17:53.429Z",
+                "reminder": "2015-08-17T19:17:53.429Z",
+                "localid": 2
+              }
+            ]
+
++ Response 200 (application/json)
+
+        {
+          "creates": [
+            {
+              "localid": 1,
+              "serverid": 9
+            },
+            {
+              "localid": 2,
+              "serverid": 10
+            }
+          ]
+        }
+
++ Response 400 (application/json)
+
+        {
+          "url": "/meet",
+          "ex": "User Exception: meets create error"
+        }
+
+
+### выборка встречи [GET /res/meet{?idmeet}]
+
++ Parameters
+   
+   + idmeet (number,required) ... Ид встречи
+        + Example = 12
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)   
+
+            {
+              "search": [
+                {
+                  "name": "create meet 0",
+                  "isimportant": false,
+                  "isdeleted": false,
+                  "hasreminder": false,
+                  "tag": [],
+                  "meeting": "2015-08-17T19:17:53.429Z",
+                  "reminder": "2015-08-17T19:17:53.429Z",
+                  "serverid": 809
+                }
+              ]
+            }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/meet",
+              "ex": "User Exception: meet get error"
+            }
+
+### изменение встреч [PUT]
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+
+    + Body
+
+            [
+              {
+                "name": "meet update 0",
+                "isimportant": null,
+                "isdeleted": false,
+                "hasreminder": true,
+                "tag": null,
+                "meeting": "2015-08-17T19:17:53.429Z",
+                "reminder": "2015-08-17T19:17:53.429Z",
+                "serverid": 809
+              }
+            ]
+            
++ Response 200 (application/json)
+
+         {
+           "message": "OK",
+           "description": null,
+           "trace": "Mon Aug 31 14:23:11 UTC 2015"
+         }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/meet",
+              "ex": "User Exception: meet not found, serverId: [240, 241, 242]"
+            }
+  
+
+### удаление встреч [DELETE /res/meet{?idmeet}]
+
++ Parameters
+
+   + idmeet (array[int],required) ... Массив удаляемых встреч
+        + Example = [1,2,3,4,5]
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)
+
+            {
+              "message": "OK",
+              "description": null,
+              "trace": "Mon Aug 31 14:40:53 UTC 2015"
+            }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/meet",
+              "ex": "User Exception: Not found: [2222]"
+            }
+
+
+### выборка встреч по типу [GET /res/meet/type{?type,revision}]
+
++ Parameters
+
+    + type (enum[string],required)
+            
+        тип списка встреч
+            
+        + Members
+            + all
+            + isimportant
+            
+    + revision = 0 (number,optional) ... Ревизия 
+    
++ Request (application/json)
+
+    + Headers 
+    
+            Authorization: bearer {access-token}
+            
++ Response 200 (application/json)
+
+            {
+              "search": [
+                {
+                  "name": "create meet 0",
+                  "isimportant": true,
+                  "isdeleted": false,
+                  "hasreminder": false,
+                  "tag": [],
+                  "meeting": "2015-08-17T19:17:53.429Z",
+                  "reminder": "2015-08-17T19:17:53.429Z",
+                  "serverid": 810
+                }
+              ]
+            }
+            
++ Response 400 (applicartion/json)
+
+            {
+              "url": "/meet/type",
+              "ex": "User Exception: type meet not found"
+            }
+
+### выборка встреч [GET  /res/meet/search{?meeting,isimportant,hasreminder,revision,isdeleted,isdeletedpermanent}]
+
++ Parameters
+    
+    + meeting = 2015-07-08T12:12 (string,optional)  ... Дата в формате ISO 8601. Находит все встречи, у которых дата встречи больше выбранной
+    
+    + isimportant = true (boolean,optional) ... Важность встреч
+    
+    + hasreminder = true (boolean,optional) ... Напоминание
+        
+    + revision = 0 (number,optional) ... Ревизия 
+    
+    + isdeleted = false (boolean,optional) ... Включить удаленные встречи
+    
+    + isdeletedpermanent = false (boolean,optional) ... Включить полностью удаленные встречи
+
++ Request (application/json)
+
+    + Headers 
+    
+            Authorization: bearer {access-token}
+
++ Response 200 (application/json)
+
+            {
+              "search": [
+                {
+                  "name": "create meet 0",
+                  "isimportant": true,
+                  "isdeleted": false,
+                  "hasreminder": false,
+                  "tag": [],
+                  "meeting": "2015-08-17T19:17:53.429Z",
+                  "reminder": "2015-08-17T19:17:53.429Z",
+                  "serverid": 810
+                }
+              ]
+            }
+

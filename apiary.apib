@@ -2,21 +2,23 @@ FORMAT: 1A
 HOST: https://app.2bedone.net:19191
 
 2bedone API v2
----
-Добро пожаловать в [2bedone](http://2bedone.net).
----
+-----
+Добро пожаловать в [2bedone](https://2bedone.net).
+-----
 -----
 Примечание:
 ```
 Дата передается по стандарту ISO 8601.
 - DateTime ... yyyy-MM-ddTHH:mm:ssTZD
-Example = 2015-08-17T19:17:53.429Z, 2015:08-17T19:17
+Example = 2015-08-17T19:17:53.429Z
 - Date ... yyyy-MM-dd
 Example = 2015:08:17
 - Time ... HH:mm:ss.SSS
 Example = 22:17:53.429, 22:17
 ```
+
 -----
+
 # Group API SECURITY
 
 ## Пользователь [/sec/user]
@@ -32,33 +34,31 @@ Example = 22:17:53.429, 22:17
     + Body
 
             {
-              "user": {
-                "emailAddress": "example@mail.ru",
-                "firstName": "example",
-                "lastName": "example",
-                "avatarsource": null,
-                "age": 0
-              },
-              "password": "1Example"
+                "email" : "test3@2bedone.net",
+                "password" : "1Medialex",
+                "firstname" : "firsname",
+                "lastname" : "lastname",
+                "age" : 0,
+                "avatarsource" : "http://"
             }
 
 + Response 200 (application/json)
 
-        {
-          "emailAddress": "example@mail.ru",
-          "firstName": "example",
-          "lastName": "example",
-          "age": 0,
-          "avatarsource": null,
-          "id": "02072a1d-3b90-4e67-afb2-b08028ed9d06"
-        }
+            {
+              "id": "68a1d1d9-87b4-44e2-b60a-72a752b47772",
+              "email": "test3@2bedone.net",
+              "firstname": "firsname",
+              "lastname": "lastname",
+              "age": 0,
+              "avatarsource": "http://"
+            }   
 
 + Response 400 (application/json)
 
-        {
-          "url": "/user",
-          "ex": "User Exception: Create user error"
-        }
+            {
+              "url": "/user",
+              "message": "Server security error: user already exists"
+            }
         
 + Response 401 (application/json)
 
@@ -67,23 +67,20 @@ Example = 22:17:53.429, 22:17
               "error_description": "Client is not configured"
             }
 
-### получить данные пользователя [GET /sec/user{?grant_type,username,password}]
-
-+ Parameters
-    + grant_type (string,required) ... authorization
-    + username (string,required) ... example@example.com
-    + password (string,required) ... example password
+### получить данные пользователя [GET]
 
 + Request (application/json)
 
     + Headers
     
             Authorization: Basic {clientId:clientSecret-Encode64}
+            email: username
+            password: password
 
 + Response 200 (application/json)
 
             {
-              "emailAddress": "example@mail.ru",
+              "email": "example@mail.ru",
               "firstName": "example",
               "lastName": "example",
               "age": 0,
@@ -94,8 +91,8 @@ Example = 22:17:53.429, 22:17
 + Response 400 (application/json)
 
             {
-              "url": "/sec/user",
-              "ex": "User Exception: error mapping params"
+              "url": "/user",
+              "message": "Server security error: email or password incorrect"
             }
             
 + Response 401 (application/json)
@@ -117,31 +114,25 @@ Example = 22:17:53.429, 22:17
     + Body 
             
             {
-              "id": "b6049896-b2da-46c4-a556-bc259855f756",
-              "password": "1Example",
-              "params": {
-                "firstName": "example1 first",
-                "lastName": "example1 last",
-                "emailAddress": "example@mail.ru",
-                "avatarsource": "http://avatarsource",
-                "newPassword": "1Example",
-                "age": "21"
-              }
+                "email" : "test1@2bedone.net",
+                "password" : "1Medialex",
+                "firstname" : "updated"
             }
             
 + Response 200 (application/json)
 
             {
-              "message": "OK",
-              "description": null,
-              "trace": "Thu Sep 03 16:35:47 MSK 2015"
+              "id": "836d686d-ad53-4625-a64d-66c74e7d22b0",
+              "email": "test1@2bedone.net",
+              "firstname": "updated",
+              "updated": "2016-02-25T14:00:23.021Z"
             }
             
 + Response 400 (application/json)
 
             {
               "url": "/user",
-              "message": "User Exception: Update user error, incorrect params"
+              "message": "Server security error: user not found"
             }
             
 + Response 401 (application/json)
@@ -150,42 +141,6 @@ Example = 22:17:53.429, 22:17
               "error": "unauthorized",
               "error_description": "Client is not configured"
             }
-            
-
-### удалить пользователя [DELETE /sec/user{?username,password}]
-
-+ Parameters
-    + username (string,required) ... example@example.com
-    + password (string,required) ... example password
-
-+ Request (application/json)
-
-    + Headers
-    
-            Authorization: Basic {clientId:clientSecret-Encode64}
-
-+ Response 200 (application/json)
-
-            {
-              "message": "OK",
-              "description": null,
-              "trace": "Thu Sep 03 16:19:31 MSK 2015"
-            }
-            
-+ Response 400 (application/json)
-
-            {
-              "url": "/user",
-              "message": "User Exception: delete user error"
-            }
-
-+ Response 401 (application/json)
-
-            {
-              "error": "unauthorized",
-              "error_description": "Client is not configured"
-            }
-
 
 ## Токен [/sec/oauth]
 
@@ -284,7 +239,6 @@ Example = 22:17:53.429, 22:17
         
 + Response 400 (application/json)
 
-
         {
           "status": 401,
           "error": "Unauthorized",
@@ -306,71 +260,81 @@ Example = 22:17:53.429, 22:17
     + Headers
             
             Authorization: bearer {access-token}
+            Accept: application/json
             
     + Body
     
             [
               {
-                "name": "name test",
-                "description": "description test",
-                "priority": "2",
-                "isdeleted": true,
-                "repeat": "2",
-                "issolved": true,
-                "hasreminder": true,
-                "tag": null,
-                "subtasks": [
-                  {
-                    "description": "ce27b0ab-105f-411f-a3ac-9c6698ce8f34",
-                    "isexecute": true,
-                    "currentid": 1,
-                    "position": 1
-                  }
-                ],
-                "localid": 1,
-                "deleteddate": "2015-08-17T19:17:53.429Z",
-                "solvedate": "2015-08-17T19:17:53.429Z",
-                "reminder": "22:17:53.429",
-                "startdate": "2015-08-26",
-                "enddate": "2015-08-26"
+                "localid": 21,
+                "name": "41-111",
+                "description": "description",
+                "startdate": "2016-02-22",
+                "enddate": "2016-02-22",
+                "hasreminder": "false",
+                "reminder": "17:36:17.163",
+                "priority": 1,
+                "repeat": 2,
+                "files": null,
+                "tags": null,
+                "location": {
+                  "latitude": 10.123,
+                  "longitude": 20.345
+                },
+                "isdeleted": "false",
+                "issolved": "false"
               }
             ]
 
 + Response 200 (application/json)
 
-        {
-          "creates": [
-            {
-              "localid": 1,
-              "serverid": 9
-            },
-            {
-              "localid": 2,
-              "serverid": 10
-            }
-          ]
-        }
+            [
+              {
+                "localid": 21,
+                "serverid": 6,
+                "name": "41-111",
+                "description": "description",
+                "startdate": "2016-02-22",
+                "enddate": "2016-02-22",
+                "hasreminder": false,
+                "reminder": "17:36:17.163",
+                "solvedate": null,
+                "priority": 1,
+                "repeat": 2,
+                "files": null,
+                "tags": null,
+                "location": {
+                  "latitude": 10.123,
+                  "longitude": 20.345
+                },
+                "issolved": false,
+                "isdeleted": false,
+                "deleteddate": null,
+                "subtasks": []
+              }
+            ]
 
 + Response 400 (application/json)
 
         {
           "url": "/task",
-          "ex": "User Exception: tasks create error"
+          "message": "*error* ..."
         }
 
 
-### выборка задачи [GET /res/task{?idtask}]
+### выборка задачи [GET /res/task/{id}]
 
 + Parameters
    
-   + idtask (number,required) ... Ид задачи
-        + Example = "12"
+   + id (number,required) ... ид задачи
+        + Example = 2
 
 + Request (application/json)
 
    + Headers 
 
             Authorization: bearer {access-token}
+            Accept: application/json
 
 + Response 200 (application/json)   
 
@@ -399,87 +363,57 @@ Example = 22:17:53.429, 22:17
 + Response 400 (application/json)
 
             {
-              "url": "/task",
-              "ex": "User Exception: task get error"
+              "url": "/task/{?}",
+              "message": "*error* ..."
             }
+            
+### выборка измененных задач [GET /res/task{?revision}]
 
-
-### изменение задач [PUT]
-
++ Parameters
+    
+    + revision = 0 (int,optional) ... актуальная ревизия клиента.
+    
 + Request (application/json)
 
     + Headers
-    
+            
             Authorization: bearer {access-token}
-
-    + Body
-
-            [
-              {
-                "name": "updates 0",
-                "description": null,
-                "priority": null,
-                "isdeleted": true,
-                "repeat": null,
-                "issolved": true,
-                "hasreminder": true,
-                "tag": null,
-                "subtasks": null,
-                "serverid": "50",
-                "deleteddate": null,
-                "solvedate": null,
-                "reminder": null,
-                "startdate": null,
-                "enddate": null
-              }
-            ]
+            Accept: application/json
             
 + Response 200 (application/json)
 
-         {
-           "message": "OK",
-           "description": null,
-           "trace": "Mon Aug 31 14:23:11 UTC 2015"
-         }
-
+            {
+              "search": [
+                {
+                  "serverid": 6,
+                  "name": "41-111",
+                  "description": "description",
+                  "startdate": "2016-02-22",
+                  "enddate": "2016-02-22",
+                  "hasreminder": false,
+                  "reminder": "17:36:17",
+                  "solvedate": null,
+                  "priority": 1,
+                  "repeat": 2,
+                  "files": [],
+                  "tags": [],
+                  "location": null,
+                  "issolved": false,
+                  "isdeleted": false,
+                  "deleteddate": null,
+                  "subtasks": []
+                }
+              ]
+            }
+            
 + Response 400 (application/json)
 
             {
               "url": "/task",
-              "ex": "User Exception: task not found, serverId: [240, 241, 242]"
+              "message": "*error* ..."
             }
-
-
-### удаление задач [DELETE /res/task{?idtask}]
-
-+ Parameters
-
-   + idtask (array[int],required) ... Массив удаляемых задач
-        + Example = [1,2,3,4,5]
-
-+ Request (application/json)
-
-   + Headers 
-
-            Authorization: bearer {access-token}
-
-+ Response 200 (application/json)
-
-            {
-              "message": "OK",
-              "description": null,
-              "trace": "Mon Aug 31 14:40:53 UTC 2015"
-            }
-
-+ Response 400 (application/json)
-
-            {
-              "url": "/task",
-              "ex": "User Exception: Not found: [2222]"
-            }
-
-
-### выборка задач по типу [GET /res/task/type{?type,revision}]
+            
+### поиск задач по типу [GET /res/task/type{?type,revision}]
 
 + Parameters
 
@@ -494,13 +428,14 @@ Example = 22:17:53.429, 22:17
             + isdeleted
             + expired
             
-    + revision = 0 (number,optional) ... Ревизия 
+    + revision = 0 (number,optional) ... ревизия 
     
 + Request (application/json)
 
     + Headers
             
             Authorization: bearer {access-token}
+            Accept: application/json
             
 + Response 200 (application/json)
 
@@ -530,10 +465,10 @@ Example = 22:17:53.429, 22:17
 
             {
               "url": "/task/type",
-              "ex": "User Exception: revision parse error"
+              "message": "*error* ..."
             }
 
-### выборка задач [GET /res/task/search{?date,priority,repeat,hasreminder,revision,issolved,isdeleted,isdeletedpermanent}]
+### поиск задач [GET /res/task/search{?date,priority,repeat,hasreminder,revision,issolved,isdeleted}]
 
 + Parameters
     
@@ -567,14 +502,13 @@ Example = 22:17:53.429, 22:17
     + issolved = false (boolean,optional) ... Решенные задачи
     
     + isdeleted = false (boolean,optional) ... Включить удаленные встречи
-    
-    + isdeletedpermanent = false (boolean,optional) ... Включить полностью удаленные встречи
 
 + Request (application/json)
 
     + Headers
             
             Authorization: bearer {access-token}
+            Accept: application/json
 
 + Response 200 (application/json)
 
@@ -599,78 +533,488 @@ Example = 22:17:53.429, 22:17
                 }
               ]
             }
+            
++ Response 400 (application/json)
 
+            {
+              "url": "/task/type",
+              "message": "*error* ..."
+            }
 
-## Идеи [/res/idea] 
+### изменение задачи [PUT /res/task/{id}]
 
-### добавление идей [POST]
++ Parameters
+    
+    + id (int) - ид задачи
 
 + Request (application/json)
 
     + Headers
             
             Authorization: bearer {access-token}
+            Accept: application/json
+
+    + Body 
+    
+            {
+              "name": "41-111",
+              "description": "description",
+              "startdate": "2016-02-22",
+              "enddate": "2016-02-22",
+              "hasreminder": "false",
+              "reminder": "17:36:17.163",
+              "priority": 1,
+              "repeat": 2,
+              "files": null,
+              "tags": null,
+              "location": {
+                "latitude": 10.123,
+                "longitude": 20.345
+              },
+              "isdeleted": "false",
+              "deleteddate": "2016-02-22T14:36:17.156Z",
+              "issolved": "false"
+            }
             
++ Response 200 (application/json)
+
+            {
+              "serverid": 1,
+              "name": "41-111",
+              "description": "description",
+              "startdate": "2016-02-22",
+              "enddate": "2016-02-22",
+              "hasreminder": false,
+              "reminder": "17:36:17.163",
+              "solvedate": null,
+              "priority": 1,
+              "repeat": 2,
+              "files": null,
+              "tags": null,
+              "location": {
+                "latitude": 10.123,
+                "longitude": 20.345
+              },
+              "issolved": false,
+              "isdeleted": false,
+              "deleteddate": "2016-02-22T14:36:17.156Z",
+              "subtasks": []
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/task/type",
+              "message": "*error* ..."
+            }
+
+### изменение задач [PUT]
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+            Accept: application/json
+
     + Body
-            
+
             [
               {
-                "description": "0 create idea",
-                "isimportant": true,
-                "isdeleted": true,
-                "tag": [],
-                "date": "2015-08-28T16:23",
-                "localid": 1
+                "serverid": 2,
+                "name": "update-41-111",
+                "description": "description",
+                "startdate": "2016-02-22",
+                "enddate": "2016-02-22",
+                "hasreminder": "false",
+                "reminder": "17:36:17.163",
+                "priority": 1,
+                "solvedate": "2016-02-24T14:04:15.044Z",
+                "repeat": 2,
+                "files": null,
+                "tags": null,
+                "location": {
+                  "latitude": 10.123,
+                  "longitude": 20.345
+                },
+                "isdeleted": "false",
+                "issolved": false,
+                "subtasks": null
+              }
+            ]
+            
++ Response 200 (application/json)
+
+            [
+              {
+                "serverid": 2,
+                "name": "update-41-111",
+                "description": "description",
+                "startdate": "2016-02-22",
+                "enddate": "2016-02-22",
+                "hasreminder": false,
+                "reminder": "17:36:17.163",
+                "solvedate": "2016-02-24T14:04:15.044Z",
+                "priority": 1,
+                "repeat": 2,
+                "files": null,
+                "tags": null,
+                "location": {
+                  "latitude": 10.123,
+                  "longitude": 20.345
+                },
+                "issolved": false,
+                "isdeleted": false,
+                "deleteddate": null,
+                "subtasks": []
               }
             ]
 
++ Response 400 (application/json)
+
+            {
+              "url": "/task",
+              "message": "*error* ..."
+            }
+
+### удаление задачи [DELETE /res/task/{id}]
+
++ Parameters
+    
+    + id (number) - ид задачи
+    
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+            Accept: application/json
+            
 + Response 200 (application/json)
 
         {
-          "creates": [
-            {
-              "localid": 1,
-              "serverid": 9
-            },
-            {
-              "localid": 2,
-              "serverid": 10
-            }
-          ]
+          "serverid": 2,
+          "name": "update-41-111",
+          "description": "description",
+          "startdate": "2016-02-22",
+          "enddate": "2016-02-22",
+          "hasreminder": false,
+          "reminder": "17:36:17",
+          "solvedate": "2016-02-24T14:04:15.044Z",
+          "priority": 1,
+          "repeat": 2,
+          "files": [],
+          "tags": [],
+          "location": {
+            "latitude": 10.123,
+            "longitude": 20.345
+          },
+          "issolved": false,
+          "isdeleted": null,
+          "deleteddate": "2016-02-25T13:31:17.702Z",
+          "subtasks": []
         }
-
+        
 + Response 400 (application/json)
 
-        {
-          "url": "/idea",
-          "ex": "User Exception: ideas create error"
-        }
+            {
+              "url": "/task",
+              "message": "*error* ..."
+            }
 
-
-### выборка идеи [GET /res/idea{?ididea}]
+### удаление задач [DELETE /res/task{?idtask}]
 
 + Parameters
-   
-   + ididea (number,required) ... Ид идеи
-        + Example = "12"
+
+   + idtask (array[int],required) ... массив удаляемых задач
+        + Example = [1,2,3,4,5]
+        + Example = 2
 
 + Request (application/json)
 
    + Headers 
 
             Authorization: bearer {access-token}
+            Accept: application/json
+
++ Response 200 (application/json)
+
+            [
+              {
+                "serverid": 2,
+                "name": "update-41-111",
+                "description": "description",
+                "startdate": "2016-02-22",
+                "enddate": "2016-02-22",
+                "hasreminder": false,
+                "reminder": "17:36:17",
+                "solvedate": "2016-02-24T14:04:15.044Z",
+                "priority": 1,
+                "repeat": 2,
+                "files": [],
+                "tags": [],
+                "location": {
+                  "latitude": 10.123,
+                  "longitude": 20.345
+                },
+                "issolved": false,
+                "isdeleted": null,
+                "deleteddate": "2016-02-25T13:29:32.093Z",
+                "subtasks": []
+              }
+            ]
+
++ Response 400 (application/json)
+
+            {
+              "url": "/task",
+              "message": "*error* ..."
+            }
+
+## Блокноты [/res/notebook]
+
+### добавление блокнота [POST]
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            Accept: application/json
+            
+    + Body
+    
+            {
+                "name": "test name"
+            }
+            
++ Response 200 (application/json)
+
+        {
+          "notes": null,
+          "serverid": 5,
+          "name": "test name",
+          "isdeleted": false,
+          "deleteddate": null
+        }
+
+### выборка блокнота [GET /res/notebook/{id}]
+
++ Parameters
+    
+    + id (int) - ид блокнота
+    
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            Accept: application/json
+    
++ Response 200 (application/json)
+
+        {
+          "search": [
+            {
+              "notes": [
+                {
+                  "serverid": 4,
+                  "date": "2016-02-22T14:36:17.156Z",
+                  "description": "description",
+                  "isimportant": false,
+                  "files": [],
+                  "tags": [],
+                  "isdeleted": false,
+                  "deleteddate": null,
+                  "idnotebook": 2
+                }
+              ],
+              "serverid": 2,
+              "name": null,
+              "isdeleted": false,
+              "deleteddate": null
+            }
+          ]
+        }
+    
+### выборка измененных блокнотов [GET /res/notebook{?revision}]
+
++ Parameters
+    
+    + revision = 0 (int,optional) ... актуальная ревизия клиента.
+    
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            Accept: application/json
+    
++ Response 200 (application/json)
+
+        {
+          "search": [
+            {
+              "notes": [
+                {
+                  "serverid": 4,
+                  "date": "2016-02-22T14:36:17.156Z",
+                  "description": "description",
+                  "isimportant": false,
+                  "files": [],
+                  "tags": [],
+                  "isdeleted": false,
+                  "deleteddate": null,
+                  "idnotebook": 2
+                }
+              ],
+              "serverid": 2,
+              "name": null,
+              "isdeleted": false,
+              "deleteddate": null
+            },
+            {
+              "notes": [],
+              "serverid": 5,
+              "name": "test name",
+              "isdeleted": false,
+              "deleteddate": null
+            },
+            {
+              "notes": [],
+              "serverid": 3,
+              "name": "update-notebook",
+              "isdeleted": false,
+              "deleteddate": null
+            }
+          ]
+        }
+
+### изменение блокнота [PUT /res/notebook/{id}]
+
++ Parameters
+    
+    + id (int) - ид блокнота
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            Accept: application/json
+            
+    + Body
+    
+            {
+                "name": "new-name"
+            }
+            
++ Response 200 (application/json)
+
+        {
+          "notes": null,
+          "serverid": 3,
+          "name": "new-name",
+          "isdeleted": false,
+          "deleteddate": null
+        }
+
+### удаление блокнота [DELETE /res/notebook/{id}]
+
++ Parameters
+    
+    + id (number) - ид блокнота
+    
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            Accept: application/json
+    
++ Response 200 (application/json)
+
+        {
+          "notes": [],
+          "serverid": 3,
+          "name": "new-name",
+          "isdeleted": null,
+          "deleteddate": "2016-02-25T10:29:16.457Z"
+        }
+
+## Заметки [/res/note] 
+
+### добавление заметок [POST]
+
++ Request (application/json)
+
+    + Headers
+            
+            Authorization: bearer {access-token}
+            Accept: application/json
+            
+    + Body
+            
+            [
+                {
+                    "localid": 12,
+                    "description": "description",
+                    "date": "2016-02-22T14:36:17.156Z",
+                    "isimportant": false
+                }
+            ]
+
++ Response 200 (application/json)
+
+            [
+              {
+                "localid": 12,
+                "serverid": 7,
+                "date": "2016-02-22T14:36:17.156Z",
+                "description": "description",
+                "isimportant": false,
+                "files": null,
+                "tags": null,
+                "isdeleted": false,
+                "deleteddate": null,
+                "idnotebook": 2
+              }
+            ]
+
++ Response 400 (application/json)
+
+        {
+          "url": "/note",
+          "message": "*error* ..."
+        }
+
+### выборка заметки [GET /res/note/{id}]
+
++ Parameters
+   
+   + id (number) - ид заметки
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+            Accept: application/json
 
 + Response 200 (application/json)   
 
             {
               "search": [
                 {
-                  "description": "create idea",
-                  "isimportant": true,
-                  "isdeleted": true,
-                  "tag": [],
-                  "date": "2015-08-17T19:17:53.429Z",
-                  "serverid": "30"
+                  "serverid": 2,
+                  "date": "2016-02-22T14:36:17.156Z",
+                  "description": "description",
+                  "isimportant": false,
+                  "files": [],
+                  "tags": [],
+                  "isdeleted": null,
+                  "deleteddate": "2016-02-24T13:15:09.176Z",
+                  "idnotebook": 2
                 }
               ]
             }
@@ -678,84 +1022,17 @@ Example = 22:17:53.429, 22:17
 + Response 400 (application/json)
 
             {
-              "url": "/idea",
-              "ex": "User Exception: idea get error"
+              "url": "/note/{?}",
+              "message": "*error* ..."
             }
-
-
-### изменение идей [PUT]
-
-+ Request (application/json)
-
-    + Headers
-    
-            Authorization: bearer {access-token}
-
-    + Body
-
-            [
-              {
-                "description": "create idea",
-                "isimportant": false,
-                "isdeleted": true,
-                "tag": [],
-                "date": "2015-08-17T19:17:53.429Z",
-                "serverid": "20"
-              }
-            ]
             
-+ Response 200 (application/json)
-
-         {
-           "message": "OK",
-           "description": null,
-           "trace": "Mon Aug 31 14:23:11 UTC 2015"
-         }
-
-+ Response 400 (application/json)
-
-            {
-              "url": "/idea",
-              "ex": "User Exception: idea not found, serverId: [240, 241, 242]"
-            }
-
-
-### удаление идей [DELETE /res/idea{?ididea}]
-
-+ Parameters
-
-   + ididea (array[int],required) ... Массив удаляемых идей
-        + Example = [1,2,3,4,5]
-
-+ Request (application/json)
-
-   + Headers 
-
-            Authorization: bearer {access-token}
-
-+ Response 200 (application/json)
-
-            {
-              "message": "OK",
-              "description": null,
-              "trace": "Mon Aug 31 14:40:53 UTC 2015"
-            }
-
-+ Response 400 (application/json)
-
-            {
-              "url": "/idea",
-              "ex": "User Exception: Not found: [2222]"
-            }
-
-
-### выборка идей по типу [GET /res/idea/type{?type,revision}]
+### поиск заметок по типу [GET /res/note/type{?type,revision}]
 
 + Parameters
     
     + type (enum[string],required)
             
-        тип списка встреч
+        тип списка заметок
             
         + Members
             + all
@@ -768,18 +1045,20 @@ Example = 22:17:53.429, 22:17
    + Headers 
 
             Authorization: bearer {access-token}
+            Accept: application/json
  
 + Response 200 (application/json)
 
             {
               "search": [
                 {
-                  "description": "create idea",
+                  "description": "create note",
                   "isimportant": true,
                   "isdeleted": true,
                   "tag": [],
                   "date": "2015-08-17T19:17:53.429Z",
-                  "serverid": "30"
+                  "serverid": "30",
+                  "idnotebook": 5
                 }
               ]
             }
@@ -787,41 +1066,41 @@ Example = 22:17:53.429, 22:17
 + Response 400 (application/json)
 
             {
-              "url": "/idea/type",
-              "ex": "User Exception: revision parse error"
+              "url": "/note",
+              "message": "*error* ..."
             }
 
-### выборка идей [GET /res/idea/search{?date,isimportant,revision,isdeleted,isdeletedpermanent}]
+### поиск заметок [GET /res/note/search{?date,isimportant,revision,isdeleted}]
 
 + Parameters
 
-    + date = 2015-07-08T12:12 (string,optional)  ... Дата в формате ISO 8601. Находит все идеи, у которых дата создания больше выбранной
+    + date = 2015-07-08T12:12 (string,optional)  ... Дата в формате ISO 8601. Находит все заметки, у которых дата создания больше выбранной
     
-    + isimportant = true (boolean,optional) ... Важность идей
+    + isimportant = true (boolean,optional) ... Важность заметок
 
     + revision = 0 (number,optional) ... Ревизия 
     
-    + isdeleted = false (boolean,optional) ... Включить удаленные идеи
-    
-    + isdeletedpermanent = false (boolean,optional) ... Включить полностью удаленные идеи
+    + isdeleted = false (boolean,optional) ... Включить удаленные заметки
 
 + Request (application/json)
 
    + Headers 
 
             Authorization: bearer {access-token}
+            Accept: application/json
 
 + Response 200 (application/json)
 
             {
               "search": [
                 {
-                  "description": "create idea",
+                  "description": "create note",
                   "isimportant": false,
                   "isdeleted": true,
                   "tag": [],
                   "date": "2015-08-17T19:17:53.429Z",
-                  "serverid": "30"
+                  "serverid": "30",
+                  "idnotebook": 5
                 }
               ]
             }
@@ -829,8 +1108,168 @@ Example = 22:17:53.429, 22:17
 + Response 400 (application/json)
 
             {
-              "url": "/idea/search",
-              "ex": "User Exception: revision parse error"
+              "url": "/note",
+              "message": "*error* ..."
+            }
+
+### изменение заметки [PUT /res/note/{id}]
+
++ Parameters
+    
+    + id (number) - ид заметки
+    
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+            Accept: application/json
+            
+    + Body
+    
+            {
+                "description": "description",
+                "date": "2016-02-22T14:36:17.156Z",
+                "isimportant": false,
+                "isdeleted": true,
+                "idnotebook": 5
+            }
+
++ Response 200 (application/json)
+
+            {
+              "serverid": 2,
+              "date": "2016-02-22T14:36:17.156Z",
+              "description": "description",
+              "isimportant": false,
+              "files": null,
+              "tags": null,
+              "isdeleted": true,
+              "deleteddate": null,
+              "idnotebook": 5
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/note/{?}",
+              "message": "*error* ..."
+            }
+
+### изменение заметок [PUT]
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+            Accept: application/json
+
+    + Body
+
+            [
+                {
+                    "serverid":2,
+                    "description": "description",
+                    "date": "2016-02-22T14:36:17.156Z",
+                    "isimportant": false,
+                    "idnotebook": 5
+                }
+            ]
+            
++ Response 200 (application/json)
+
+            [
+              {
+                "serverid": 2,
+                "date": "2016-02-22T14:36:17.156Z",
+                "description": "description",
+                "isimportant": false,
+                "files": null,
+                "tags": null,
+                "isdeleted": false,
+                "deleteddate": null,
+                "idnotebook": 5
+              }
+            ]
+
++ Response 400 (application/json)
+
+            {
+              "url": "/note",
+              "message": "*error* ..."
+            }
+
+### удаление заметки [DELETE /res/note/{id}]
+
++ Parameters
+    
+    + id (number) - ид заметки
+    
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+            Accept: application/json
+    
++ Response 200 (application/json)
+
+        {
+          "serverid": 2,
+          "date": "2016-02-22T14:36:17.156Z",
+          "description": "description",
+          "isimportant": false,
+          "files": [],
+          "tags": [],
+          "isdeleted": null,
+          "deleteddate": "2016-02-25T10:48:54.946Z",
+          "idnotebook": 5
+        }
+        
++ Response 400 (application/json)
+
+            {
+              "url": "/note",
+              "message": "*error* ..."
+            }
+
+### удаление заметок [DELETE /res/note{?idnote}]
+
++ Parameters
+
+   + idnote (array[int],required) ... Массив удаляемых заметок или заметки
+        + Example = [1,2,3,4,5]
+        + Example = 2
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+            Accept: application/json
+
++ Response 200 (application/json)
+
+        [
+          {
+            "serverid": 2,
+            "date": "2016-02-22T14:36:17.156Z",
+            "description": "description",
+            "isimportant": false,
+            "files": [],
+            "tags": [],
+            "isdeleted": null,
+            "deleteddate": "2016-02-25T10:49:58.897Z",
+            "idnotebook": 5
+          }
+        ]
+
++ Response 400 (application/json)
+
+            {
+              "url": "/note",
+              "message": "*error* ..."
             }
 
 ## Встречи [/res/meet] 
@@ -842,60 +1281,51 @@ Example = 22:17:53.429, 22:17
     + Headers
             
             Authorization: bearer {access-token}
+            Accept: application/json
             
     + Body
             
             [
-              {
-                "name": "create meet 0",
-                "isimportant": false,
-                "isdeleted": false,
-                "hasreminder": false,
-                "tag": null,
-                "meeting": "2015-08-17T19:17:53.429Z",
-                "reminder": "2015-08-17T19:17:53.429Z",
-                "localid": 1
-              },
-              {
-                "name": "create meet 1",
-                "isimportant": false,
-                "isdeleted": false,
-                "hasreminder": false,
-                "tag": null,
-                "meeting": "2015-08-17T19:17:53.429Z",
-                "reminder": "2015-08-17T19:17:53.429Z",
-                "localid": 2
-              }
+                {
+                    "localid": 21,
+                    "name": "description",
+                    "meeting": "2016-02-22T14:36:17.156+06:00",
+                    "hasreminder": false,
+                    "isimportant": false
+                }
             ]
 
 + Response 200 (application/json)
 
-        {
-          "creates": [
-            {
-              "localid": 1,
-              "serverid": 9
-            },
-            {
-              "localid": 2,
-              "serverid": 10
-            }
-          ]
-        }
+            [
+              {
+                "localid": 21,
+                "serverid": 6,
+                "name": "description",
+                "isimportant": false,
+                "meeting": "2016-02-22T08:36:17.156Z",
+                "reminder": null,
+                "hasreminder": false,
+                "location": null,
+                "tags": null,
+                "isdeleted": false,
+                "deleteddate": null
+              }
+            ]
 
 + Response 400 (application/json)
 
         {
           "url": "/meet",
-          "ex": "User Exception: meets create error"
+          "message": "*error* ..."
         }
 
 
-### выборка встречи [GET /res/meet{?idmeet}]
+### выборка встречи [GET /res/meet/{id}]
 
 + Parameters
    
-   + idmeet (number,required) ... Ид встречи
+   + id (number,required) ... ид встречи
         + Example = 12
 
 + Request (application/json)
@@ -903,6 +1333,7 @@ Example = 22:17:53.429, 22:17
    + Headers 
 
             Authorization: bearer {access-token}
+            Accept: application/json
 
 + Response 200 (application/json)   
 
@@ -925,78 +1356,64 @@ Example = 22:17:53.429, 22:17
 
             {
               "url": "/meet",
-              "ex": "User Exception: meet get error"
+              "message": "*error* ..."
             }
-
-### изменение встреч [PUT]
-
-+ Request (application/json)
-
-    + Headers
-    
-            Authorization: bearer {access-token}
-
-    + Body
-
-            [
-              {
-                "name": "meet update 0",
-                "isimportant": null,
-                "isdeleted": false,
-                "hasreminder": true,
-                "tag": null,
-                "meeting": "2015-08-17T19:17:53.429Z",
-                "reminder": "2015-08-17T19:17:53.429Z",
-                "serverid": 809
-              }
-            ]
-            
-+ Response 200 (application/json)
-
-         {
-           "message": "OK",
-           "description": null,
-           "trace": "Mon Aug 31 14:23:11 UTC 2015"
-         }
-
-+ Response 400 (application/json)
-
-            {
-              "url": "/meet",
-              "ex": "User Exception: meet not found, serverId: [240, 241, 242]"
-            }
-  
-
-### удаление встреч [DELETE /res/meet{?idmeet}]
+       
+### выборка измененных встреч [GET /res/meet{?revision}]
 
 + Parameters
-
-   + idmeet (array[int],required) ... Массив удаляемых встреч
-        + Example = [1,2,3,4,5]
-
+    
+    + revision = 0 (int,optional) ... актуальная ревизия клиента.
+    
 + Request (application/json)
 
-   + Headers 
-
+    + Headers 
+    
             Authorization: bearer {access-token}
-
+            Accept: application/json
+    
 + Response 200 (application/json)
 
             {
-              "message": "OK",
-              "description": null,
-              "trace": "Mon Aug 31 14:40:53 UTC 2015"
+              "search": [
+                {
+                  "serverid": 3,
+                  "name": "6666description",
+                  "isimportant": false,
+                  "meeting": "2016-02-22T08:36:17.156Z",
+                  "reminder": null,
+                  "hasreminder": false,
+                  "location": null,
+                  "tags": [],
+                  "isdeleted": null,
+                  "deleteddate": "2016-02-25T12:57:07.52Z"
+                },
+                {
+                  "serverid": 2,
+                  "name": "+1description",
+                  "isimportant": false,
+                  "meeting": "2016-02-22T08:36:17.156Z",
+                  "reminder": null,
+                  "hasreminder": false,
+                  "location": null,
+                  "tags": [
+                    "1",
+                    "2"
+                  ],
+                  "isdeleted": false,
+                  "deleteddate": null
+                }
+              ]
             }
-
+            
 + Response 400 (application/json)
 
             {
               "url": "/meet",
-              "ex": "User Exception: Not found: [2222]"
+              "message": "*error* ..."
             }
 
-
-### выборка встреч по типу [GET /res/meet/type{?type,revision}]
+### поиск встреч по типу [GET /res/meet/type{?type,revision}]
 
 + Parameters
 
@@ -1015,6 +1432,7 @@ Example = 22:17:53.429, 22:17
     + Headers 
     
             Authorization: bearer {access-token}
+            Accept: application/json
             
 + Response 200 (application/json)
 
@@ -1037,10 +1455,10 @@ Example = 22:17:53.429, 22:17
 
             {
               "url": "/meet/type",
-              "ex": "User Exception: type meet not found"
+              "message": "*error* ..."
             }
 
-### выборка встреч [GET  /res/meet/search{?meeting,isimportant,hasreminder,revision,isdeleted,isdeletedpermanent}]
+### поиск встреч [GET  /res/meet/search{?meeting,isimportant,hasreminder,revision,isdeleted}]
 
 + Parameters
     
@@ -1053,14 +1471,13 @@ Example = 22:17:53.429, 22:17
     + revision = 0 (number,optional) ... Ревизия 
     
     + isdeleted = false (boolean,optional) ... Включить удаленные встречи
-    
-    + isdeletedpermanent = false (boolean,optional) ... Включить полностью удаленные встречи
 
 + Request (application/json)
 
     + Headers 
     
             Authorization: bearer {access-token}
+            Accept: application/json
 
 + Response 200 (application/json)
 
@@ -1071,7 +1488,7 @@ Example = 22:17:53.429, 22:17
                   "isimportant": true,
                   "isdeleted": false,
                   "hasreminder": false,
-                  "tag": [],
+                  "tags": [],
                   "meeting": "2015-08-17T19:17:53.429Z",
                   "reminder": "2015-08-17T19:17:53.429Z",
                   "serverid": 810
@@ -1079,3 +1496,172 @@ Example = 22:17:53.429, 22:17
               ]
             }
 
++ Response 400 (applicartion/json)
+
+            {
+              "url": "/meet/search",
+              "message": "*error* ..."
+            }
+
+### изменение встречи [PUT /res/meet/{id}]
+
++ Parameters
+
+   + id (number,required) - ид встречи
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+            Accept: application/json
+            
+    + Body
+    
+            {
+                "name": "6666description",
+                "meeting": "2016-02-22T14:36:17.156+06:00",
+                "hasreminder": false,
+                "isimportant": false
+            }
+            
++ Response 200 (application/json)
+
+            {
+              "serverid": 3,
+              "name": "6666description",
+              "isimportant": false,
+              "meeting": "2016-02-22T08:36:17.156Z",
+              "reminder": null,
+              "hasreminder": false,
+              "location": null,
+              "tags": null,
+              "isdeleted": false,
+              "deleteddate": null
+            }
+
+### изменение встреч [PUT]
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: bearer {access-token}
+            Accept: application/json
+
+    + Body
+
+            [
+                {
+                    "serverid" : 2,
+                    "name": "+1description",
+                    "meeting": "2016-02-22T14:36:17.156+06:00",
+                    "hasreminder": false,
+                    "isimportant": false,
+                    "tags": [
+                        "1",
+                        "2"
+                    ]
+                }
+            ]
+            
++ Response 200 (application/json)
+
+            [
+              {
+                "serverid": 2,
+                "name": "+1description",
+                "isimportant": false,
+                "meeting": "2016-02-22T08:36:17.156Z",
+                "reminder": null,
+                "hasreminder": false,
+                "location": null,
+                "tags": [
+                  "1",
+                  "2"
+                ],
+                "isdeleted": false,
+                "deleteddate": null
+              }
+            ]
+
++ Response 400 (application/json)
+
+            {
+              "url": "/meet",
+              "message": "*error* ..."
+            }
+
+### удаление встречи [DELETE /res/meet/{id}]
+
++ Parameters
+
+   + id (number,required) - ид встречи
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+            Accept: application/json
+
++ Response 200 (application/json)
+
+            {
+              "serverid": 2,
+              "name": "+1description",
+              "isimportant": false,
+              "meeting": "2016-02-22T08:36:17.156Z",
+              "reminder": null,
+              "hasreminder": false,
+              "location": null,
+              "tags": [],
+              "isdeleted": null,
+              "deleteddate": "2016-02-25T12:51:47.129Z"
+            }
+
++ Response 400 (application/json)
+
+            {
+              "url": "/meet",
+              "message": "*error* ..."
+            }
+
+### удаление встреч [DELETE /res/meet{?idmeet}]
+
++ Parameters
+
+   + idmeet (array[int],required) ... Массив удаляемых встреч
+        + Example = [1,2,3,4,5]
+        + Example = 2
+
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+            Accept: application/json
+
++ Response 200 (application/json)
+
+            [
+              {
+                "serverid": 3,
+                "name": "6666description",
+                "isimportant": false,
+                "meeting": "2016-02-22T08:36:17.156Z",
+                "reminder": null,
+                "hasreminder": false,
+                "location": null,
+                "tags": [],
+                "isdeleted": null,
+                "deleteddate": "2016-02-25T12:57:07.52Z"
+              }
+            ]
+
++ Response 400 (application/json)
+
+            {
+              "url": "/meet",
+              "message": "*error* ..."
+            }

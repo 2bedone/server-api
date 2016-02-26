@@ -1033,6 +1033,44 @@ Example = 22:17:53.429, 22:17
               "message": "*error* ..."
             }
             
+### выборка измененных заметок [GET /res/note{?revision}]
+
++ Parameters
+    
+    + revision = 0 (int,optional) ... актуальная ревизия клиента.
+  
++ Request (application/json)
+
+   + Headers 
+
+            Authorization: bearer {access-token}
+            Accept: application/json
+ 
++ Response 200 (application/json)
+
+            {
+              "search": [
+                {
+                  "description": "create note",
+                  "isimportant": true,
+                  "isdeleted": true,
+                  "tag": [],
+                  "date": "2015-08-17T19:17:53.429Z",
+                  "serverid": "30",
+                  "idnotebook": 5
+                }
+              ],
+              "revision": 23
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/note",
+              "message": "*error* ..."
+            }
+
+            
 ### поиск заметок по типу [GET /res/note/type{?type,revision}]
 
 + Parameters

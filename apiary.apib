@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: https://app.2bedone.net:19191
+HOST: https://app.2bedone.net:8080
 
 2bedone API v2
 -----
@@ -21,9 +21,9 @@ Example = 22:17:53.429, 22:17
 
 # Group API SECURITY
 
-## Пользователь [/sec/user]
+## Пользователь [/v2/sec/user]
 
-### создать пользователя [POST]
+### создать пользователя [POST /v2/sec/user/signUp]
 
 + Request (application/json)
 
@@ -45,12 +45,20 @@ Example = 22:17:53.429, 22:17
 + Response 200 (application/json)
 
             {
-              "id": "68a1d1d9-87b4-44e2-b60a-72a752b47772",
-              "email": "test3@2bedone.net",
-              "firstname": "firsname",
-              "lastname": "lastname",
-              "age": 0,
-              "avatarsource": "http://"
+              "user": {
+                "id": "3e49090d-0b94-49e8-b94d-72dbb4180bd5",
+                "email": "test@2bedone.net",
+                "firstname": "firsname",
+                "lastname": "lastname",
+                "age": 0,
+                "avatarsource": "http://"
+              },
+              "token": {
+                "access_token": "049d7f48-94fe-4d8a-a420-51f273b6789a",
+                "token_type": "bearer",
+                "refresh_token": "9c4cb6a0-9b88-48f6-92ef-a8c0533191ab",
+                "scope": "read write"
+              }
             }   
 
 + Response 400 (application/json)
@@ -67,25 +75,36 @@ Example = 22:17:53.429, 22:17
               "error_description": "Client is not configured"
             }
 
-### получить данные пользователя [GET]
+### получить данные пользователя [POST /v2/sec/user/signIn]
 
-+ Request (application/json)
++ Request (application/x-www-form-urlencoded)
+
+    + Attributes
+        + username (string,required) - username
+        + password (string,required) - password
 
     + Headers
-    
+        
             Authorization: Basic {clientId:clientSecret-Encode64}
-            email: username
-            password: password
+
 
 + Response 200 (application/json)
 
             {
-              "email": "example@mail.ru",
-              "firstName": "example",
-              "lastName": "example",
-              "age": 0,
-              "avatarsource": "http://avatarsource"
-              "id": "b6049896-b2da-46c4-a556-bc259855f756"
+              "user": {
+                "id": "5f8e436d-79be-4631-b505-4644a31a815f",
+                "email": "test@2bedone.net",
+                "firstname": "firsname",
+                "lastname": "lastname",
+                "age": 0,
+                "avatarsource": "http://"
+              },
+              "token": {
+                "access_token": "56128658-11bc-4c66-8312-31670dee8497",
+                "token_type": "bearer",
+                "refresh_token": "478bbe2c-bc63-4f38-b760-bdfc2ed66175",
+                "scope": "read write"
+              }
             }
             
 + Response 400 (application/json)
@@ -103,6 +122,7 @@ Example = 22:17:53.429, 22:17
             }
 
 
+
 ### обновить данные пользователя [PUT]
 
 + Request (application/json)
@@ -118,6 +138,56 @@ Example = 22:17:53.429, 22:17
                 "password" : "1Medialex",
                 "firstname" : "updated"
             }
+            
++ Response 200 (application/json)
+
+            {
+              "id": "836d686d-ad53-4625-a64d-66c74e7d22b0",
+              "email": "test1@2bedone.net",
+              "firstname": "updated",
+              "updated": "2016-02-25T14:00:23.021Z"
+            }
+            
++ Response 400 (application/json)
+
+            {
+              "url": "/user",
+              "message": "Server security error: user not found"
+            }
+            
++ Response 401 (application/json)
+
+            {
+              "error": "unauthorized",
+              "error_description": "Client is not configured"
+            }
+            
+### обновить данные пользователя с аватаром [PUT /v2/sec/user/updateWithAvatarSource]
+
++ Request (multipart/form-data;boundary="---content";boundary="---image")
+
+    + Headers
+
+            Authorization: Basic {clientId:clientSecret-Encode64}
+
+    + Body 
+
+            ---content
+            Content-Disposition: form-data; name="content";
+            Content-Type: application/json
+            
+            {
+                "email" : "test1@2bedone.net",
+                "password" : "1Medialex",
+                "firstname" : "updated"
+            }
+            ---content
+            ---image
+            Content-Disposition: form-data; name="image";
+            Content-Type: image/jpeg;image/png;
+            ---image
+           
+
             
 + Response 200 (application/json)
 
